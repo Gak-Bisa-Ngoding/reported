@@ -1,0 +1,21 @@
+name: linting-on-pr
+on: pull_request
+jobs:
+  run_linter:
+    name: "Linting checks"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v42
+        with:
+          separator: ","
+
+      - name: "detekt"
+        uses: natiginfo/action-detekt-all@1.23.5
+        with:
+          args: -p ./config/detekt/detekt-compose-0.3.11-all.jar,./config/detekt/detekt-formatting-1.23.5.jar -c ./config/detekt/detekt.yml -b ./config/detekt/baseline.xml -ac --build-upon-default-config -ex "**/build/**,**/resources/**" -i ${{ steps.changed-files.outputs.all_changed_files }}
